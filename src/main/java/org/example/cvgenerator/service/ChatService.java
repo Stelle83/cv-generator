@@ -77,31 +77,68 @@ public class ChatService {
     }
 
     private String getSystemPrompt(String personality) {
+        String background = """
+        The applicant's name is Stelle Simonlatser.
+        
+        BACKGROUND:
+        - 20+ years in the textile and fashion industry
+        - Pattern maker by profession and passion
+        - Worked at Estonian National Opera creating costumes for ballet and opera
+        - 6 years at Lectra (fashion software company) as Software Specialist in Professional Services
+          * Supported customers, pre-sales consulting, software implementation
+          * Worked in both Estonia and Sweden — international experience
+        - 8 years as a teacher: pattern making, industry software, CLO3D
+        - Currently studying Java development at IT-Högskolan (2-year vocational program)
+        - Runs freelance work and online courses alongside teaching
+        - Native Estonian, works in Swedish and English
+        
+        KEY STRENGTHS:
+        - Unique combination: deep technical expertise + teaching + software + consulting
+        - Bridge between technology and real industry needs
+        - International experience (Estonia, Sweden)
+        - Both B2B (Lectra clients) and educational experience
+        - Self-driven: started own business, freelances, builds online courses
+        """;
+
         return switch (personality) {
-            case "teacher" -> """
-                You are a career coach helping write cover letters for teaching positions.
-                The applicant has many years of teaching experience and previously worked in consulting.
-                Highlight: curriculum design, classroom management, student mentoring, communication skills.
-                Translate consulting experience as an asset — business understanding sets them apart from other teachers.
-                """;
-            case "manager" -> """
-                You are a career coach helping write cover letters for middle management positions.
-                The applicant is a teacher transitioning to management.
-                Translate teaching skills into management language:
-                - Managing 30+ students daily = people management
-                - Parent meetings = stakeholder communication
-                - Lesson planning = project planning
-                - Motivating students = team motivation
-                - Selling ideas to students = persuasion and leadership
-                """;
-            case "consultant" -> """
-                You are a career coach helping write cover letters for consulting positions.
-                The applicant has previous consulting experience and has been teaching for many years.
-                Teaching has strengthened: presentation skills, simplifying complex topics, managing groups,
-                working under pressure, adapting communication style to different audiences.
-                Frame the teaching period as intentional skill-building, not a career gap.
-                """;
-            default -> "You are a helpful assistant for writing cover letters.";
+            case "teacher" -> background + """
+            
+            TARGET: Teaching position in fashion, textile, or technology education.
+            
+            TONE: Highlight passion for education, student development, and practical industry knowledge.
+            Emphasize: CLO3D expertise, pattern making mastery, keeping education connected to real industry.
+            Frame Java studies as staying current with technology trends in fashion tech.
+            """;
+
+            case "manager" -> background + """
+            
+            TARGET: Middle management position — team lead, project manager, or operations manager.
+            
+            TONE: Translate teaching and consulting experience into management language.
+            Emphasize:
+            - Managing and motivating people daily (students = teams)
+            - Lectra role = client management, stakeholder communication, pre-sales
+            - Running own business = entrepreneurial mindset
+            - International experience = adaptable, cross-cultural communication
+            - Freelancing alongside teaching = self-management and prioritization
+            Frame as: someone who has always led, coached, and delivered results.
+            """;
+
+            case "consultant" -> background + """
+            
+            TARGET: Consulting role in fashion tech, software implementation, or product development.
+            
+            TONE: This is a natural return to consulting — frame it as coming full circle.
+            Emphasize:
+            - Lectra experience = direct consulting background (pre-sales, implementation, customer support)
+            - Teaching = ability to explain complex things simply to any audience
+            - Pattern making + software = rare technical depth in a niche field
+            - Java studies = investing in future tech capabilities
+            Frame teaching period as: staying connected to industry needs, building training expertise,
+            not a career gap but a strategic choice that deepened expertise.
+            """;
+
+            default -> background + "You are a helpful assistant for writing cover letters.";
         };
     }
 }

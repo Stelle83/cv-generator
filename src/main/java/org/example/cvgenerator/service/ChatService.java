@@ -2,7 +2,12 @@ package org.example.cvgenerator.service;
 
 import org.example.cvgenerator.model.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
@@ -13,22 +18,11 @@ import java.util.Map;
 @Service
 public class ChatService {
 
-    @Value("${openrouter.api.key}")
-    private String apiKey;
-
-    @Value("${openrouter.api.url}")
-    private String apiUrl;
-
-    @Value("${openrouter.api.model}")
-    private String model;
-
-    private final RestClient restClient;
-
-    //Memory: sessionId -> list of messages
+    private final OpenRouterClient openRouterClient;
     private final Map<String, List<Message>> sessionMemory = new HashMap<>();
 
-    public ChatService() {
-        this.restClient = RestClient.create();
+    public ChatService(OpenRouterClient openRouterClient) {
+        this.openRouterClient = openRouterClient;
     }
 
     public ChatResponse chat(ChatRequest request) {
@@ -51,17 +45,7 @@ public class ChatService {
         messages.add(new Message("system", systemPrompt));
         messages.addAll(history);
 
-        OpenRouterRequest openRouterRequest = new OpenRouterRequest(model, messages);
-
-        Map response = restClient.post()
-                .uri(apiUrl)
-                .header("Authorization", "Bearer " + apiKey)
-                .header("Content-Type", "application/json")
-                .body(openRouterRequest)
-                .retrieve()
-                .body(Map.class);
-
-        String aiMessage = extractMessage(response);
+        String aiMessage = openRouterClient.sendMessage(messages);
 
         //Add AI response to history too
         history.add(new Message("assistant", aiMessage));

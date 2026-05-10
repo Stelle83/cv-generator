@@ -4,6 +4,9 @@ import org.example.cvgenerator.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +24,9 @@ public class ChatService {
 
     private final RestClient restClient;
 
+    //Memory: sessionId -> list of messages
+    private final Map<String, List<Message>> sessionMemory = new HashMap<>();
+
     public ChatService() {
         this.restClient = RestClient.create();
     }
@@ -28,10 +34,22 @@ public class ChatService {
     public ChatResponse chat(ChatRequest request) {
         String systemPrompt = getSystemPrompt(request.getPersonality());
 
-        List<Message> messages = List.of(
-                new Message("system", systemPrompt),
-                new Message("user", request.getMessage())
+        //Get or create historyfor this session
+        String sessionId = request.getSessionId() != null
+                ? request.getSessionId()
+                : "default";
+
+        List<Message> history = sessionMemory.computeIfAbsent(
+                sessionId, k -> new ArrayList<>()
         );
+
+        //Add user message to history
+        history.add(new Message("user", request.getMessage()));
+
+        //Build full message list: system prompt + history
+        List<Message> messages = new ArrayList<>();
+        messages.add(new Message("system", systemPrompt));
+        messages.addAll(history);
 
         OpenRouterRequest openRouterRequest = new OpenRouterRequest(model, messages);
 
@@ -44,7 +62,11 @@ public class ChatService {
                 .body(Map.class);
 
         String aiMessage = extractMessage(response);
-        return new ChatResponse(aiMessage, request.getSessionId());
+
+        //Add AI response to history too
+        history.add(new Message("assistant", aiMessage));
+
+        return new ChatResponse(aiMessage, sessionId);
     }
 
     private String extractMessage(Map response) {

@@ -51,8 +51,11 @@ POST /api/v1/chat
 
 1. Clone the repository
 2. Create a `.env` file in the project root:
-3. Run the application
-4. Visit `http://localhost:8080/swagger-ui.html`
+3. Add the `.env` file in IntelliJ Run Configuration:
+    - Edit Configurations → Modify options → Environment variables
+    - Load from file → select `.env`
+4. Run the application
+5. Visit `http://localhost:8080/swagger-ui.html`
 
 ## Tech Stack
 

@@ -1,4 +1,4 @@
-package org.example.cvgenerator;
+package org.example.cvgenerator.controller;
 
 import org.example.cvgenerator.model.ChatRequest;
 import org.example.cvgenerator.model.ChatResponse;
@@ -69,5 +69,77 @@ class ChatControllerTest {
                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sessionId").value("default"));
+    }
+
+    @Test
+    void chat_shouldUseConsultantPersonality() throws Exception {
+        when(chatService.chat(any(ChatRequest.class)))
+                .thenReturn(new ChatResponse("Consultant cover letter!", "session-1"));
+
+        mockMvc.perform(post("/api/v1/chat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                    "personality": "consultant",
+                    "message": "Write me a cover letter",
+                    "sessionId": "session-1"
+                }
+            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Consultant cover letter!"));
+    }
+
+    @Test
+    void chat_shouldUseManagerPersonality() throws Exception {
+        when(chatService.chat(any(ChatRequest.class)))
+                .thenReturn(new ChatResponse("Manager cover letter!", "session-2"));
+
+        mockMvc.perform(post("/api/v1/chat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                    "personality": "manager",
+                    "message": "Write me a cover letter",
+                    "sessionId": "session-2"
+                }
+            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Manager cover letter!"));
+    }
+
+    @Test
+    void chat_shouldUseTeacherPersonality() throws Exception {
+        when(chatService.chat(any(ChatRequest.class)))
+                .thenReturn(new ChatResponse("Teacher cover letter!", "session-3"));
+
+        mockMvc.perform(post("/api/v1/chat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                    "personality": "teacher",
+                    "message": "Write me a cover letter",
+                    "sessionId": "session-3"
+                }
+            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Teacher cover letter!"));
+    }
+
+    @Test
+    void chat_shouldUseDefaultPersonality_whenUnknownPersonality() throws Exception {
+        when(chatService.chat(any(ChatRequest.class)))
+                .thenReturn(new ChatResponse("Default cover letter!", "session-4"));
+
+        mockMvc.perform(post("/api/v1/chat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                    "personality": "unknown",
+                    "message": "Write me a cover letter",
+                    "sessionId": "session-4"
+                }
+            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Default cover letter!"));
     }
 }

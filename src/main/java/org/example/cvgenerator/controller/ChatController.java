@@ -20,7 +20,7 @@ public class ChatController {
 
     @Operation(
             summary = "Generate cover letter",
-            description = "Send a message to the AI with a personality to generate a tailored cover letter"
+            description = "Send a message to the AI with a personality to generate a tailored cover letter. Take account the position one applies, the candidate´s background and wrote application by picking up relevant information from the user"
     )
     @PostMapping("/chat")
     public ChatResponse chat(@RequestBody ChatRequest request) {

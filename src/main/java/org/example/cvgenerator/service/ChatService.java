@@ -1,14 +1,7 @@
 package org.example.cvgenerator.service;
 
 import org.example.cvgenerator.model.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,7 +91,7 @@ public class ChatService {
             
             TARGET: Middle management position — team lead, project manager, or operations manager.
             
-            TONE: Translate teaching and consulting experience into management language.
+            TONE: Translate teaching and consulting experience into management language. Use more corporate language.
             Emphasize:
             - Managing and motivating people daily (students = teams)
             - Lectra role = client management, stakeholder communication, pre-sales
